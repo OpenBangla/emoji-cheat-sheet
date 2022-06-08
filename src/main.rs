@@ -1,5 +1,6 @@
 use std::{env::var_os, path::PathBuf, io::{BufWriter, Write}, fs::{File, read}, collections::BTreeMap, fmt::write};
 
+use askama::Template;
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -16,9 +17,24 @@ struct Emoji {
     tags: Vec<String>,
 }
 
+struct Data {
+    emoji: String,
+    codes: Vec<String>
+}
+
+struct Section {
+    section: String,
+    emojis: Vec<Data>
+}
+
+#[derive(Template)]
+#[template(path = "index.html")]
+struct Page {
+    sections: Vec<Section>
+}
+
 fn main() {
     let root = PathBuf::from(var_os("CARGO_MANIFEST_DIR").unwrap());
-    //let parent = root.parent().unwrap();
     let dest = root.join("index.html");
 
     let mut file = BufWriter::new(File::create(dest).unwrap());
@@ -41,20 +57,31 @@ fn main() {
         }
     }
 
-    write!(&mut file, "<html>\n<body>").unwrap();
-
-    for (section, emojis) in categorized {
-        write!(&mut file, "\n<p>{section}</p>\n").unwrap();
-        write!(&mut file, "<table>\n<tr>\n").unwrap();
-        for emoji in emojis {
-            write!(&mut file, "<td>{emoji}</td>\n<td>").unwrap();
-            for code in emoji_table.get(&emoji).unwrap() {
-                write!(&mut file, "{code},").unwrap();
-            }
-            write!(&mut file, "</td>\n</tr>").unwrap();
+    // Closure to add a section to sections.
+    let add_section = |section: &str, sections: &mut Vec<Section>| {
+        let mut datas = Vec::new();
+        for emoji in categorized.get(section).unwrap() {
+            let codes = emoji_table.get(emoji).unwrap().clone();
+            let data = Data { emoji: emoji.to_owned(), codes };
+            datas.push(data);
         }
-        write!(&mut file, "</table>\n").unwrap();
-    }
+        sections.push(Section { section: section.to_owned(), emojis: datas });
+    };
 
-    write!(&mut file, "</body>\n</html>\n").unwrap();
+    // Sections
+    let mut sections = Vec::new();
+    add_section("Smileys & Emotion", &mut sections);
+    add_section("People & Body", &mut sections);
+    add_section("Animals & Nature", &mut sections);
+    add_section("Activities", &mut sections);
+    add_section("Objects", &mut sections);
+    add_section("Food & Drink", &mut sections);
+    add_section("Symbols", &mut sections);
+    add_section("Travel & Places", &mut sections);
+    add_section("Flags", &mut sections);
+
+    let page = Page { sections };
+
+    let page = page.render().unwrap();
+    write!(&mut file, "{page}").unwrap();
 }

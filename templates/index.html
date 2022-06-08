@@ -1,0 +1,19 @@
+<html>
+    <body>
+        {% for section in sections -%}
+        <p>{{ section.section }}</p>
+        <table>
+            {% for emoji in section.emojis -%}
+            <tr>
+            <td>{{ emoji.emoji }}</td>
+            <td>
+                {% for code in emoji.codes -%}
+                {{ code }},
+                {%- endfor %}
+            </td>
+            </tr>
+            {%- endfor %}
+        </table>
+        {%- endfor %}
+    </body>
+</html>
