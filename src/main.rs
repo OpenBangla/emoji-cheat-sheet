@@ -1,4 +1,10 @@
-use std::{env::var_os, path::PathBuf, io::{BufWriter, Write}, fs::{File, read}, collections::BTreeMap, fmt::write};
+use std::{
+    collections::BTreeMap,
+    env::var_os,
+    fs::{read, File},
+    io::{BufWriter, Write},
+    path::PathBuf,
+};
 
 use askama::Template;
 use serde::Deserialize;
@@ -19,18 +25,18 @@ struct Emoji {
 
 struct Data {
     emoji: String,
-    codes: Vec<String>
+    codes: Vec<String>,
 }
 
 struct Section {
     section: String,
-    emojis: Vec<Data>
+    emojis: Vec<Data>,
 }
 
 #[derive(Template)]
 #[template(path = "index.html")]
 struct Page {
-    sections: Vec<Section>
+    sections: Vec<Section>,
 }
 
 fn main() {
@@ -44,12 +50,17 @@ fn main() {
     let mut categorized: BTreeMap<String, Vec<String>> = BTreeMap::new();
     let mut emoji_table: BTreeMap<String, Vec<String>> = BTreeMap::new();
 
-    for Emoji { emoji, category, aliases, tags } in emojis {
+    for Emoji {
+        emoji,
+        category,
+        aliases,
+        tags,
+    } in emojis
+    {
         categorized.entry(category).or_default().push(emoji.clone());
 
         for alias in aliases {
             emoji_table.entry(emoji.clone()).or_default().push(alias);
-
         }
 
         for tag in tags {
@@ -57,15 +68,40 @@ fn main() {
         }
     }
 
+    // Bengali Emoji
+    let source = read(root.join("data/emoji-bn.json")).unwrap();
+    let bn_emoji: BTreeMap<String, Vec<String>> = serde_json::from_slice(&source).unwrap();
+
+    for (emoji, codes) in bn_emoji {
+        emoji_table
+            .entry(emoji)
+            .or_default()
+            .extend(codes.iter().filter(|s| !s.contains(" ")).cloned());
+    }
+
+    // Emoticon
+    let source = read(root.join("data/emoticon.json")).unwrap();
+    let emoticons: Vec<Emoticon> = serde_json::from_slice(&source).unwrap();
+
+    for Emoticon { emoji, emoticons } in emoticons {
+        emoji_table.entry(emoji).or_default().extend(emoticons);
+    }
+
     // Closure to add a section to sections.
     let add_section = |section: &str, sections: &mut Vec<Section>| {
         let mut datas = Vec::new();
         for emoji in categorized.get(section).unwrap() {
             let codes = emoji_table.get(emoji).unwrap().clone();
-            let data = Data { emoji: emoji.to_owned(), codes };
+            let data = Data {
+                emoji: emoji.to_owned(),
+                codes,
+            };
             datas.push(data);
         }
-        sections.push(Section { section: section.to_owned(), emojis: datas });
+        sections.push(Section {
+            section: section.to_owned(),
+            emojis: datas,
+        });
     };
 
     // Sections
