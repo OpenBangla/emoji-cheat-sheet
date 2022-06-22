@@ -59,13 +59,12 @@ fn main() {
     {
         categorized.entry(category).or_default().push(emoji.clone());
 
-        for alias in aliases {
-            emoji_table.entry(emoji.clone()).or_default().push(alias);
-        }
+        emoji_table
+            .entry(emoji.clone())
+            .or_default()
+            .extend(aliases);
 
-        for tag in tags {
-            emoji_table.entry(emoji.clone()).or_default().push(tag);
-        }
+        emoji_table.entry(emoji.clone()).or_default().extend(tags);
     }
 
     // Bengali Emoji
