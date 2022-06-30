@@ -1,0 +1,16 @@
+.smileys,
+.body {
+  padding: 1rem;
+  margin-top: 2rem;
+  box-shadow: 1px 1px 8px rgba(0, 0, 0, 0.127);
+  border-radius: 5px;
+}
+
+.emoji_name {
+  background-color: rgba(128, 128, 128, 0.16);
+  color: rgb(0, 0, 0);
+  padding: 0 6px;
+  border-radius: 5px;
+  display: inline-block;
+  margin-bottom: 3px;
+}
