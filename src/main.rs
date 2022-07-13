@@ -41,7 +41,7 @@ struct Page {
 
 fn main() {
     let root = PathBuf::from(var_os("CARGO_MANIFEST_DIR").unwrap());
-    let dest = root.join("index.html");
+    let dest = root.join("render").join("index.html");
 
     let mut file = BufWriter::new(File::create(dest).unwrap());
     let source = read(root.join("data/emoji.json")).unwrap();
