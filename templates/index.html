@@ -5,33 +5,68 @@
     <!-- bootstrap cdn -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <!-- font awesome cdn -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
 
     <!-- external css -->
     <link rel="stylesheet" href="style.css">
 </head>
-    <body>
-        <div class="container">
-            {% for section in sections -%}
-            <section class="body mb-5">
-                <h3 class="text-center mb-4">
-                    {{section.section}}
-                </h3>
-                <div class="row">
-                    {% for emoji in section.emojis -%}
-                    <div class="col-12 col-md-6 col-lg-4 mb-3">
-                        <div class="row">
-                            <div class="col-1 "> {{ emoji.emoji }} </div>
-                            <div class="col-10">
-                                {% for code in emoji.codes -%}
-                                <span class="emoji_name">{{ code }}</span>
-                                {%- endfor %}
-                            </div>
+
+<body>
+    <header id="top">
+        <a target="_blank" href="https://openbangla.github.io">
+            <img src="./logo.png" alt="OpenBangla Keyboard logo">
+        </a>
+
+
+        <h1 class="text-center">
+            Emoji Cheat Sheet
+        </h1>
+
+    </header>
+    <div class="container">
+        <section>
+            <div class="row ">
+                <div class="col col-lg-8 offset-lg-2">
+                    <div class="card card-body my-4">
+                        <h3 class="text-center">Table of Content</h3>
+
+                        <div class="tableOfContentLinks">
+                            {% for section in sections -%}
+                            <a href="#{{section.section}}"> {{ section.section }} </a>
+                            {%- endfor %}
                         </div>
                     </div>
-                    {%- endfor %}
                 </div>
-            </section>
-            {%- endfor %}
-        </div>
-    </body>
+            </div>
+        </section>
+        
+        {% for section in sections -%}
+        <section id="{{ section.section }}" class="body py-4">
+            <h3 class="text-center mb-4">
+                {{ section.section }}
+            </h3>
+            <div class="row">
+                {% for emoji in section.emojis -%}
+                <div class="col-12 col-md-6 col-lg-4 mb-3">
+                    <div class="row">
+                        <div class="col-1 "> {{ emoji.emoji }} </div>
+                        <div class="col-10">
+                            {% for code in emoji.codes -%}
+                            <span class="emoji_name">{{ code }}</span>
+                            {%- endfor %}
+                        </div>
+                    </div>
+                </div>
+                {%- endfor %}
+            </div>
+        </section>
+        {%- endfor %}
+    </div>
+
+    <div class="scrollToTop">
+        <a title="Go to Top" href="#top"> <i class="fa fa-arrow-up" aria-hidden="true"></i></a>
+    </div>
+</body>
+
 </html>
