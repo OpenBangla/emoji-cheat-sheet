@@ -7,20 +7,13 @@ use std::{
 };
 
 use askama::Template;
+use emojicon::internal::{bn_emojis, emojis as gh_emojis, emoticons};
 use serde::Deserialize;
-
-#[derive(Deserialize)]
-struct Emoticon {
-    emoji: String,
-    emoticons: Vec<String>,
-}
 
 #[derive(Deserialize)]
 struct Emoji {
     emoji: String,
     category: String,
-    aliases: Vec<String>,
-    tags: Vec<String>,
 }
 
 struct Data {
@@ -50,52 +43,49 @@ fn main() {
     let mut categorized: BTreeMap<String, Vec<String>> = BTreeMap::new();
     let mut emoji_table: BTreeMap<String, Vec<String>> = BTreeMap::new();
 
-    for Emoji {
-        emoji,
-        category,
-        aliases,
-        tags,
-    } in emojis
-    {
+    for Emoji { emoji, category } in emojis {
         categorized.entry(category).or_default().push(emoji.clone());
+    }
 
-        emoji_table
-            .entry(emoji.clone())
-            .or_default()
-            .extend(aliases);
-
-        emoji_table.entry(emoji.clone()).or_default().extend(tags);
+    // Github inspired shortcodes
+    for (code, emoji) in gh_emojis() {
+        for item in emoji {
+            emoji_table
+                .entry(item.to_string())
+                .or_default()
+                .push(code.to_string());
+        }
     }
 
     // Bengali Emoji
-    let source = read(root.join("data/emoji-bn.json")).unwrap();
-    let bn_emoji: BTreeMap<String, Vec<String>> = serde_json::from_slice(&source).unwrap();
-
-    for (emoji, codes) in bn_emoji {
-        emoji_table
-            .entry(emoji)
-            .or_default()
-            .extend(codes.iter().filter(|s| !s.contains(" ")).cloned());
+    for (code, emoji) in bn_emojis() {
+        for item in emoji {
+            emoji_table
+                .entry(item.to_string())
+                .or_default()
+                .push(code.to_string());
+        }
     }
 
     // Emoticon
-    let source = read(root.join("data/emoticon.json")).unwrap();
-    let emoticons: Vec<Emoticon> = serde_json::from_slice(&source).unwrap();
-
-    for Emoticon { emoji, emoticons } in emoticons {
-        emoji_table.entry(emoji).or_default().extend(emoticons);
+    for (code, emoji) in emoticons() {
+        emoji_table
+            .entry(emoji.to_string())
+            .or_default()
+            .push(code.to_string());
     }
 
     // Closure to add a section to sections.
     let add_section = |section: &str, sections: &mut Vec<Section>| {
         let mut datas = Vec::new();
         for emoji in categorized.get(section).unwrap() {
-            let codes = emoji_table.get(emoji).unwrap().clone();
-            let data = Data {
-                emoji: emoji.to_owned(),
-                codes,
-            };
-            datas.push(data);
+            if let Some(codes) = emoji_table.get(emoji) {
+                let data = Data {
+                    emoji: emoji.to_owned(),
+                    codes: codes.clone(),
+                };
+                datas.push(data);
+            }
         }
         sections.push(Section {
             section: section.to_owned(),

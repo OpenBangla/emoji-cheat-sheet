@@ -43,6 +43,10 @@ header img {
   border-radius: 5px;
 }
 
+div[class="container"] section:last-of-type {
+  margin-bottom: 2rem;
+}
+
 .emoji_name {
   background-color: rgba(128, 128, 128, 0.16);
   color: rgb(0, 0, 0);
