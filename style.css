@@ -1,0 +1,76 @@
+header {
+  display: grid;
+  align-items: center;
+  grid-template-columns: 1fr 11fr;
+  background-color: #597dc9;
+  /* background: #49739d; */
+  /* background: -webkit-linear-gradient(to right, #3498db, #49739d);
+  background: linear-gradient(to right, #38a2e8, #478cd0dd); */
+  background: -webkit-linear-gradient(to right, #3498db, #49739d);
+  background: linear-gradient(to right, #f8623f, #fe2e72);
+  padding: 1rem;
+  color: #fff;
+}
+
+header img {
+  width: 60px;
+}
+.tableOfContentLinks {
+  display: flex;
+  flex-direction: column;
+}
+
+.tableOfContentLinks a {
+  text-decoration: none;
+  color: #212529;
+  margin-bottom: 3px;
+  padding-left: 10px;
+  border-radius: 3px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  transition: all 0.2s;
+}
+
+.tableOfContentLinks a:hover {
+  background-color: rgb(246, 246, 246);
+}
+
+.smileys,
+.body {
+  padding: 1rem;
+  margin-top: 2rem;
+  box-shadow: 1px 1px 8px rgba(0, 0, 0, 0.127);
+  border-radius: 5px;
+}
+
+div[class="container"] section:last-of-type {
+  margin-bottom: 2rem;
+}
+
+.emoji_name {
+  background-color: rgba(128, 128, 128, 0.16);
+  color: rgb(0, 0, 0);
+  padding: 0 6px;
+  border-radius: 5px;
+  display: inline-block;
+  margin-bottom: 3px;
+  margin-right: 5px;
+}
+
+.scrollToTop {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  padding-bottom: 2rem;
+  padding-right: 1rem;
+}
+
+.scrollToTop a {
+  padding: 14px 16.5px;
+  /* background-color: #123d6a; */
+  background-color: #fe2e72;
+  border: none;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 1.2rem;
+}
